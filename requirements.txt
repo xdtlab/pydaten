@@ -1,0 +1,5 @@
+asyncio==3.4.3
+aiohttp==3.0.1
+coincurve==7.1.0
+argon2-cffi==18.1.0
+requests==2.18.4

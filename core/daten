@@ -1,0 +1,25 @@
+#!/usr/bin/python3
+
+import io, json, os
+
+from pydaten.node import Node
+from pydaten.address import Address
+
+DEFAULT_IP = '0.0.0.0'
+DEFAULT_PORT = 32323
+
+if __name__ == '__main__':
+    CONFIG_DIR = os.path.join(os.path.expanduser("~"), '.daten')
+    if not os.path.exists(CONFIG_DIR):
+        os.makedirs(CONFIG_DIR)
+    CONFIG_PATH = os.path.join(CONFIG_DIR, 'node.json')
+
+    try:
+        with io.open(CONFIG_PATH, 'r') as f:
+            config = json.load(f)
+    except IOError:
+        config = {'ip': DEFAULT_IP, 'port': DEFAULT_PORT, 'path': os.path.join(CONFIG_DIR, 'data')}
+        with io.open(CONFIG_PATH, 'w') as f:
+            json.dump(config, f, indent = 2)
+
+    node = Node(config['ip'], config['port'], config['path'])
