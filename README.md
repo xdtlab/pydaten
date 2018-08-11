@@ -1,4 +1,6 @@
-# Introduction to Daten
+# Daten Project
+
+[![Build Status](https://travis-ci.org/daten-project/pydaten.svg?branch=master)](https://travis-ci.org/daten-project/pydaten)
 
 _Daten Team_
 
