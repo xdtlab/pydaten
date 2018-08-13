@@ -349,6 +349,11 @@ class Blockchain(object):
 
         history = []
         leaf = self.find(destination) if destination else self.root
+
+        # Destination not found!
+        if not leaf:
+            return []
+
         if not name:
             leaves = leaf.children.values()
         else:
