@@ -19,9 +19,9 @@ class LightNode:
     TRANSACTION_HISTORY_URL = "{}/address/{}/transactions"
     BALANCE_URL = "{}/address/{}/balance"
 
-    def __init__(self):
+    def __init__(self, initial_peers):
         self.bad_peers = {}
-        self.peers = {"http://127.0.0.1:32323"}
+        self.peers = set(initial_peers)
         self.peers_lock = threading.Lock()
 
     def all_peers(self):

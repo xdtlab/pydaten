@@ -37,8 +37,8 @@ class Node(LightNode):
         resp.headers['ACCESS-CONTROL-ALLOW-ORIGIN'] = '*'
         return resp
 
-    def __init__(self, ip, port, path):
-        super().__init__()
+    def __init__(self, ip, port, path, initial_peers):
+        super().__init__(initial_peers)
 
         self.ip = ip
         self.port = port
