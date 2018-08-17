@@ -389,7 +389,10 @@ class Node(LightNode):
 
     async def mine(self, request):
 
-        self.miner_address = Address.from_string(request.query.get('address', None))
+        miner_address = Address.from_string(request.query.get('address', None))
+        if self.blockchain.resolve(miner_address) is None:
+            return web.json_response(data = {'ok': False, 'error': 'Miner not valid!'})
+        self.miner_address = miner_address
         print("Miner: " + str(self.miner_address))
 
         if self.miner:
