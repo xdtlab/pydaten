@@ -6,4 +6,4 @@ COPY requirements.txt /pydaten
 RUN pip install -r requirements.txt
 COPY . /pydaten
 RUN python setup.py install
-CMD ["daten"]
+ENTRYPOINT ["daten"]
