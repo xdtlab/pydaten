@@ -376,6 +376,9 @@ class Blockchain(object):
         previous_hash = self.latest_block.calculate_hash()
         transactions = list(self.transactions)
 
+        # Sort by byte-price.
+        transactions.sort(key = lambda t: t.fee / len(t.serialize()))
+
         fee_transaction = Transaction(
             version = config.VERSION, target = index, fee = 0,
             name = None,
