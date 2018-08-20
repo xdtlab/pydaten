@@ -34,8 +34,9 @@ if __name__ == '__main__':
     parser.add_argument("--path", help="Path for storing blocks.")
     parser.add_argument("--init", help="Initial peer.")
     args = parser.parse_args()
+    args.init = {args.init} if args.init else None
 
     node = Node(args.host or config['ip'],
                 args.port or config['port'],
                 args.path or config['path'],
-                {args.init} or config['initialPeers'])
+                args.init or config['initialPeers'])
