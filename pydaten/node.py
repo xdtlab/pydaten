@@ -169,7 +169,7 @@ class Node(LightNode):
 
     async def nodes(self, request):
         if request.method == 'GET':
-            return web.json_response(data = {'ok': True, 'peers': list(self.peers)})
+            return web.json_response(data = {'ok': True, 'peers': list(self.all_peers())})
         elif request.method == 'POST':
             peer = (await request.post())['peer']
             self.add_peer(peer)
