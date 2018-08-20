@@ -44,7 +44,7 @@ class Node(LightNode):
         self.port = port
         self.path = path
 
-        self.host = 'http://' + self.ip + ':' + str(self.port)
+        self.host = '{}:{}'.format(self.ip, self.port)
 
         print("Loading the blockchain...")
         self.blockchain = Blockchain(CachedStorage(FileStorage(self.path)))

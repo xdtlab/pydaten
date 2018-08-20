@@ -10,14 +10,14 @@ from .blockchain import Blockchain
 
 class LightNode:
 
-    PEERS_URL = "{}/peers"
-    STATUS_URL = "{}/status"
-    TRANSACTIONS_URL = "{}/transactions"
-    BLOCK_URL = "{}/blocks/{}"
-    BLOCKS_RANGE_URL = "{}/blocks/{}/{}"
-    BLOCKS_URL = "{}/blocks"
-    TRANSACTION_HISTORY_URL = "{}/address/{}/transactions"
-    BALANCE_URL = "{}/address/{}/balance"
+    PEERS_URL = "http://{}/peers"
+    STATUS_URL = "http://{}/status"
+    TRANSACTIONS_URL = "http://{}/transactions"
+    BLOCK_URL = "http://{}/blocks/{}"
+    BLOCKS_RANGE_URL = "http://{}/blocks/{}/{}"
+    BLOCKS_URL = "http://{}/blocks"
+    TRANSACTION_HISTORY_URL = "http://{}/address/{}/transactions"
+    BALANCE_URL = "http://{}/address/{}/balance"
 
     def __init__(self, initial_peers):
         self.bad_peers = {}
