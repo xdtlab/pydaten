@@ -37,14 +37,11 @@ class Node(LightNode):
         resp.headers['ACCESS-CONTROL-ALLOW-ORIGIN'] = '*'
         return resp
 
-    def __init__(self, ip, port, path, initial_peers):
+    def __init__(self, host, ip, port, path, initial_peers):
         super().__init__(initial_peers)
 
-        self.ip = ip
-        self.port = port
         self.path = path
-
-        self.host = '{}:{}'.format(self.ip, self.port)
+        self.host = host
 
         print("Loading the blockchain...")
         self.blockchain = Blockchain(CachedStorage(FileStorage(self.path)))
@@ -84,7 +81,7 @@ class Node(LightNode):
         app.router.add_get('/live', self.live)
         app.router.add_get('/mine', self.mine)
         self.app = app
-        web.run_app(app, host=self.ip, port=self.port)
+        web.run_app(app, host=ip, port=port)
 
     def update_peers(self):
         if self.host in self.peers:
