@@ -342,6 +342,20 @@ class Blockchain(object):
 
         self.transactions.append(transaction)
 
+    def latest(self, address):
+        address = self.resolve(address)
+        history = []
+        start = max(self.latest_block.index - config.QUERY_MAX_BLOCKS, 0)
+        end = self.latest_block.index
+        for i in range(start, end):
+            block = self.get_block(i)
+            for tx in block.transactions:
+                src = self.resolve(tx.source)
+                dst = self.resolve(tx.destination)
+                if src == address or dst == address:
+                    history.append(tx)
+        return history
+
     def query(self, name = None, destination = None):
         # This is a very huge query.
         if name is None and destination is None:

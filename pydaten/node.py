@@ -76,6 +76,7 @@ class Node(LightNode):
         app.router.add_route('*', '/transactions', self.transactions)
         app.router.add_get('/status', self.status)
         app.router.add_get('/query', self.query)
+        app.router.add_get('/latest', self.latest)
         app.router.add_get('/resolve', self.resolve)
         app.router.add_get('/confirm', self.confirm)
         app.router.add_get('/live', self.live)
@@ -216,6 +217,11 @@ class Node(LightNode):
         if destination:
             destination = Address.from_string(destination)
         txs = self.blockchain.query(name = name, destination = destination)
+        return web.Response(body=Transaction.serialize_list(txs))
+
+    async def latest(self, request):
+        address = Address.from_string(request.query.get('address'))
+        txs = self.blockchain.latest(address = address)
         return web.Response(body=Transaction.serialize_list(txs))
 
     async def resolve(self, request):
