@@ -346,7 +346,7 @@ class Blockchain(object):
         address = self.resolve(address)
         history = []
         start = max(self.latest_block.index - config.QUERY_MAX_BLOCKS, 0)
-        end = self.latest_block.index
+        end = self.latest_block.index + 1
         for i in range(start, end):
             block = self.get_block(i)
             for tx in block.transactions:
