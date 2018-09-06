@@ -3,14 +3,13 @@
 
 [![Build Status](https://travis-ci.org/daten-project/pydaten.svg?branch=master)](https://travis-ci.org/daten-project/pydaten)
 
-It has been years since the first version of Bitcoin came out. Although a massive amount of time has been spended on research and development of next generation blockchains, they are still being used primarily for financial purposes.
+It has been years since the first version of Bitcoin came out. Although a massive amount of time has been spent on research and development of next generation blockchains, they are still being used primarily for financial purposes.
 
 I, as a Software Engineer, interested in Blockchain stuff, decided to design and implement a brand new P2P network from scratch, in which members are able to store structured data by spending some tokens.
 
 ## What is Daten?
 
-Daten is a P2P NoSQL data storage network, heavily inspired from the original Bitcoin design with some simplifications and features. Like Bitcoin, The Daten Network consists of miners who verify the transactions by doing PoW on blocks. Accounts are simply private-key
-and public-key pairs, which have some balance in themselves.
+Daten is a P2P NoSQL data storage network, heavily inspired from the original Bitcoin design with some simplifications and features. Like Bitcoin, The Daten Network consists of miners who verify the transactions by doing PoW on blocks. Accounts are simply private-key and public-key pairs, which have some balance in themselves.
 
 Users are able to attach different types of data to the transactions. The difference is, those data are **_queryable_**. Attachments are not free, just as regular transactions in other cryptocurrencies cost a fee.
 
@@ -29,12 +28,15 @@ Daten can be used as a database platform for different applications. Daten remov
 
 With Daten, you can upload files on the blockchain, securely chat with your friends, participate in decentralized social networks, store webpages, transfer value and much more.
 
-As an example, users can build a Twitter-like social network on top of Daten, without the need of a remote server.
+As an example, users can build a Twitter-like social network on top of Daten, without the need of a remote server, with everything, including the HTML pages, CSS styles, JS files and images uploaded in the blockchain itself.
 
 ## Data and Addresses, building blocks of the Daten Network
 Each transaction in the Daten blockchain has a property called **data** which is used to store up to 64KB of data with different types, including **Strings**, **Bytes**, **Booleans**,  **Decimals**, **Maps**, **Lists** (and **Functions** in the future) in itself.
 One unique feature of the Daten blockchain is that transactions can be referenced somehow as users are able to assign a name for their transactions.
 One who has created and signed a transaction, owns the name of that transactions, and that means, if other users ever transfer money to this name (Instead of a public-key), the public-key will be the final owner of that money.
+
+ - If you send a transaction to a public-key with name `alice`, she will own the name `alice`.
+ - If Bob send a transaction to a name address (`bob`) with name `alice`, he will own the name `alice.bob`.
 
 This feature brings two important features:
 
@@ -91,16 +93,17 @@ Daten uses **Argon2i** as its PoW hash function.
 ### Running a Daten Node (Docker way)
 
 #### Docker way
+
 ```bash
 git clone https://github.com/xdtlab/pydaten.git
 cd ./pydaten
 docker build -t daten .
 docker run daten -p 32323:32323
 ```
-Follow the instructions below to setup a Daten node on your server:
 
 #### Normal way
-You should have Python 3.5+ installed on your system in order to be able to run a Daten node on your server.
+
+You should have Python 3.5+ installed on your system in order to be able to run a Daten node.
 ```bash
 git clone https://github.com/xdtlab/pydaten.git
 cd ./pydaten
@@ -108,6 +111,23 @@ sudo pip3 install -r requirements.txt
 sudo python3 setup.py install
 ```
 Configurations are normally stored in `~/.daten/node.json`.
+
+```json
+{
+  "host": "1.2.3.4:32323",
+  "ip": "0.0.0.0",
+  "port": 32323,
+  "path": "~/.daten/data",
+  "initialPeers": [
+    "nd1.daten.cash:32323"
+  ]
+}
+```
+ - `host` is where the network nodes are able to find you in the internet.
+ - `ip` and `port` is the listening socket.
+ - `path` is where the blocks are going to be stored.
+ - `initialPeers` is a list of
+
 After setting up the configurations you can run your node:
 ```bash
 daten
@@ -116,17 +136,17 @@ daten
 Guide on how to develop Daten dApps using JavaScript.
 
 #### Connecting to a Daten node
-First you should connect to a Daten node like this:
+First you should connect to a Daten node by creating a wallet object. It accepts an initial node address as its first argument.
+
 ```js
-var wallet = new daten.Wallet("http://nd1.daten.cash");
+var wallet = new daten.Wallet("nd1.daten.cash:32323");
 ```
 
 #### Get node status
-State of a node includes the current epoch of that node and length of its
-blockchain.
-You can get the state of a node like this:
+You can get the state of a random node in the network like this:
 ```js
-wallet.getStatus(function() {
+wallet.getStatus(function(state) {
+  alert(state.height);
 });
 ```
 
@@ -140,7 +160,7 @@ wallet.listen(address, function(tx) {
 #### Send transactions
 Send transactions:
 ```js
-wallet.sendTransaction();
+wallet.sendTransaction(tx, onResult, onError);
 ```
 
 #### Query data
