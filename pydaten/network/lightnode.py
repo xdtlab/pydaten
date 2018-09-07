@@ -4,9 +4,9 @@ import random
 import threading
 import time
 
-from . import config
-from .block import Block
-from .blockchain import Blockchain
+from pydaten.defaults import config
+from pydaten.common.block import Block
+from pydaten.core.blockchain import Blockchain
 
 class LightNode:
 

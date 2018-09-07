@@ -3,8 +3,8 @@
 import hashlib
 from argon2.low_level import hash_secret_raw, Type
 
-from . import difficulty
-from .address import RawAddress
+from pydaten.core import difficulty
+from pydaten.common.address import RawAddress
 
 VERSION = 0
 MAX_PEERS = 128

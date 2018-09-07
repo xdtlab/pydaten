@@ -2,14 +2,15 @@ import unittest
 import hashlib
 import time
 from unittest.mock import *
-from ..blockchain import Blockchain
-from ..storage import MemoryStorage
-from ..address import RawAddress, Address
-from ..block import Block
-from ..transaction import Transaction
-from ..data import NoData
-from .. import genesis, config, difficulty
-from ..wallet import Wallet
+from pydaten.core.blockchain import Blockchain
+from pydaten.core.storage import MemoryStorage
+from pydaten.common.address import RawAddress, Address
+from pydaten.common.block import Block
+from pydaten.common.transaction import Transaction
+from pydaten.common.data import NoData
+from pydaten.defaults import genesis, config
+from pydaten.core import difficulty
+from pydaten.network.wallet import Wallet
 
 class BlockchainTest(unittest.TestCase):
 

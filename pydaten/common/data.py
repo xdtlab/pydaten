@@ -2,8 +2,8 @@
 
 from abc import ABC, abstractmethod
 
-from . import config
-from .bytestream import ByteStream
+from pydaten.defaults import config
+from pydaten.utils.bytestream import ByteStream
 
 class Data(ABC):
 

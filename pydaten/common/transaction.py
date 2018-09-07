@@ -3,11 +3,10 @@
 import time
 import io
 
-from .bytestream import ByteStream
-from . import config
-from .data import Data
-from .address import Address
-from . import utils
+from pydaten.utils.bytestream import ByteStream
+from pydaten.defaults import config
+from pydaten.common.data import Data
+from pydaten.common.address import Address
 
 class Transaction:
 

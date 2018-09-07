@@ -4,11 +4,10 @@ import time
 import hashlib
 import io
 
-from . import config
-from .bytestream import ByteStream
-from .transaction import *
-from .merkletree import MerkleTree
-
+from pydaten.defaults import config
+from pydaten.utils.bytestream import ByteStream
+from pydaten.common.transaction import *
+from pydaten.core.merkletree import MerkleTree
 
 class Block(object):
 

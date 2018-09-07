@@ -1,5 +1,5 @@
 import unittest
-from .. import difficulty
+from pydaten.core import difficulty
 
 class DifficultyTest(unittest.TestCase):
 

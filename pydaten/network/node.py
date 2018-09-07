@@ -15,17 +15,17 @@ import os
 from queue import Queue
 import pkg_resources
 
-from .lightnode import LightNode
-from .blockchain import Blockchain
-from .storage import FileStorage, CachedStorage
-from .transaction import Transaction
-from .block import Block
-from . import config
-from . import difficulty
-from . import genesis
-from . import utils
-from .errors import *
-from .address import *
+from pydaten.network.lightnode import LightNode
+from pydaten.core.blockchain import Blockchain
+from pydaten.core.storage import FileStorage, CachedStorage
+from pydaten.common.transaction import Transaction
+from pydaten.common.block import Block
+from pydaten.defaults import config
+from pydaten.core import difficulty
+from pydaten.defaults import genesis
+from pydaten.utils import misc
+from pydaten.core.errors import *
+from pydaten.common.address import *
 
 RESOURCES_PATH = pkg_resources.resource_filename(__name__, 'resources')
 
@@ -112,7 +112,7 @@ class Node(LightNode):
                 times.append(response.json()['time'])
             except requests.exceptions.RequestException:
                 self.set_bad_peer(node)
-        network_time = utils.median(times)
+        network_time = misc.median(times)
         self.network_time_offset += node_time - network_time
 
     def broadcast_block(self, block):

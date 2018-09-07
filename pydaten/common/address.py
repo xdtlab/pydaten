@@ -3,7 +3,7 @@
 import string
 from abc import ABC, abstractmethod
 
-from .bytestream import ByteStream
+from pydaten.utils.bytestream import ByteStream
 
 class Address(ABC):
 

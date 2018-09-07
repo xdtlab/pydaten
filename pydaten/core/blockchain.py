@@ -6,16 +6,15 @@ import time
 import os
 from abc import ABC, abstractmethod
 
-from .transaction import Transaction
-from .block import Block
-from . import utils
-from .bytestream import ByteStream
-from . import difficulty
-from . import config
-from .data import NoData
-from .address import *
-from . import genesis
-from .errors import *
+from pydaten.common.transaction import Transaction
+from pydaten.common.block import Block
+from pydaten.utils import misc
+from pydaten.utils.bytestream import ByteStream
+from pydaten.core import difficulty
+from pydaten.defaults import config, genesis
+from pydaten.common.data import NoData
+from pydaten.common.address import *
+from pydaten.core.errors import *
 
 class Leaf:
     def __init__(self, raw_address, target):
@@ -176,7 +175,7 @@ class Blockchain(object):
         if block.index >= config.BLOCKS_CLOCK_CHECK:
             previous_blocks = self.get_block_range(block.index - config.BLOCKS_CLOCK_CHECK, block.index)
             timestamps = [b.timestamp for b in previous_blocks]
-            med = utils.median(timestamps)
+            med = misc.median(timestamps)
             if block.timestamp <= med:
                 raise InvalidTimestamp()
 
@@ -295,7 +294,7 @@ class Blockchain(object):
                 raise NameTaken()
 
         # Check if it is signed by the source
-        from .wallet import Wallet
+        from pydaten.network.wallet import Wallet
         source = self.resolve(transaction.source)
         if source is None:
             raise InvalidTransactionSource()

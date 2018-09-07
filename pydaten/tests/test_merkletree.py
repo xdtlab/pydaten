@@ -1,7 +1,7 @@
 import unittest
 import hashlib
-from ..merkletree import MerkleTree
-from ..errors import HashNotFound
+from pydaten.core.merkletree import MerkleTree
+from pydaten.core.errors import HashNotFound
 
 class MerkleTreeTest(unittest.TestCase):
 

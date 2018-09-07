@@ -6,11 +6,11 @@ import requests
 import time
 import random
 
-from .lightnode import LightNode
-from .transaction import Transaction
-from . import config
-from .address import *
-from .data import *
+from pydaten.network.lightnode import LightNode
+from pydaten.common.transaction import Transaction
+from pydaten.defaults import config
+from pydaten.common.address import *
+from pydaten.common.data import *
 
 class Wallet(LightNode):
     def __init__(self, key = None):

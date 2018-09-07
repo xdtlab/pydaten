@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 
-from .transaction import Transaction
-from .block import Block
-from .config import *
-from .data import NoData
-from .address import RawAddress
+from pydaten.common.transaction import Transaction
+from pydaten.common.block import Block
+from pydaten.defaults.config import *
+from pydaten.common.data import NoData
+from pydaten.common.address import RawAddress
 
 FOUNDER_NAME = RawAddress(bytes.fromhex('02f46d41c945d636e00729e2f3355c7c602e8a3703c1a1db138d9919d79b4e1017'))
 FOUNDER_INITIAL_BALANCE = SUPPLY // 10 # 10% of all assets

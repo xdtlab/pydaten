@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-from . import config
-from .bytestream import ByteStream
-from .errors import HashNotFound
+from pydaten.defaults import config
+from pydaten.utils.bytestream import ByteStream
+from pydaten.core.errors import HashNotFound
 
 class MerkleNode:
     def __init__(self, value, left, right, parent):

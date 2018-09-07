@@ -2,7 +2,7 @@
 
 import os
 import io
-from .block import Block
+from pydaten.common.block import Block
 
 class FileStorage:
 

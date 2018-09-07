@@ -9,6 +9,11 @@ setup(name = 'pydaten',
     author_email = 'daten-project@protonmail.ch',
     url = 'https://github.com/xdtlab/pydaten',
     install_requires = ['coincurve', 'argon2_cffi', 'asyncio', 'aiohttp', 'requests'],
-    packages = ['pydaten'],
+    packages = ['pydaten',
+                'pydaten.common',
+                'pydaten.core',
+                'pydaten.defaults',
+                'pydaten.network',
+                'pydaten.utils'],
     package_data = {'': ['resources/*', 'resources/static/*']},
-    scripts = ['core/daten'])
+    scripts = ['scripts/daten'])
