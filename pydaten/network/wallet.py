@@ -11,36 +11,21 @@ from pydaten.common.transaction import Transaction
 from pydaten.defaults import config
 from pydaten.common.address import *
 from pydaten.common.data import *
+from pydaten.crypto import ecdsa
 
 class Wallet(LightNode):
     def __init__(self, key = None):
         super().__init__()
         try:
             if key and len(key) == 32:
-                self._private_key = cc.PrivateKey(key, context=cc.GLOBAL_CONTEXT)
+                self.private_key = key
             elif key:
                 raise ValueError()
             else:
-                self._private_key = cc.PrivateKey(context=cc.GLOBAL_CONTEXT)
+                self.private_key = ecdsa.generate()[0]
         except ValueError:
             raise ValueError("Key should be 32 bytes!")
-        self._public_key = self._private_key.public_key
-
-    def private_key(self):
-        return self._private_key.secret
-
-    def public_key(self):
-        return self._public_key.format(compressed=True)
-
-    def _sha256(data):
-        return hashlib.sha256(data).digest()
-
-    def sign(self, message):
-        return self._private_key.sign(message, hasher=Wallet._sha256)
-
-    def verify(address, message, signature):
-        return cc.PublicKey(address, context=cc.GLOBAL_CONTEXT) \
-            .verify(signature, message, hasher=Wallet._sha256)
+        self.public_key = ecdsa.open(self.private_key)
 
     def send_transaction(self, name, destination, amount, data = NoData()):
         peer = random.choice(self.random_peers())
@@ -56,7 +41,7 @@ class Wallet(LightNode):
             data = data,
             signature = b'\0' * 71)
         tx.fee = byte_price * len(tx.serialize())
-        tx.signature = self.sign(tx.signable())
+        tx.signature = ecdsa.sign(tx.signable(), self.private_key)
         return self.send_transaction_to(peer, tx)
 
 if __name__ == '__main__':
@@ -64,5 +49,5 @@ if __name__ == '__main__':
     key = bytes.fromhex(input("Please enter your key. (Or press enter for a new account)\n"))
     wallet = Wallet(key if key else None)
 
-    print("Address: " + wallet.public_key().hex())
-    print("Key: " + wallet.private_key().hex())
+    print("Address: " + wallet.public_key.hex())
+    print("Key: " + wallet.private_key.hex())

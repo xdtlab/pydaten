@@ -14,6 +14,7 @@ setup(name = 'pydaten',
                 'pydaten.core',
                 'pydaten.defaults',
                 'pydaten.network',
-                'pydaten.utils'],
+                'pydaten.utils',
+                'pydaten.crypto'],
     package_data = {'': ['resources/*', 'resources/static/*']},
     scripts = ['scripts/daten'])

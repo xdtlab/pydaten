@@ -15,6 +15,7 @@ from pydaten.defaults import config, genesis
 from pydaten.common.data import NoData
 from pydaten.common.address import *
 from pydaten.core.errors import *
+from pydaten.crypto import ecdsa
 
 class Leaf:
     def __init__(self, raw_address, target):
@@ -294,11 +295,10 @@ class Blockchain(object):
                 raise NameTaken()
 
         # Check if it is signed by the source
-        from pydaten.network.wallet import Wallet
         source = self.resolve(transaction.source)
         if source is None:
             raise InvalidTransactionSource()
-        if not Wallet.verify(source.public_key,transaction.signable(),transaction.signature):
+        if not ecdsa.verify(transaction.signable(), source.public_key, transaction.signature):
             raise InvalidTransactionSignature()
         destination = self.resolve(transaction.destination)
         if destination is None:
