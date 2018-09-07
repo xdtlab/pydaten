@@ -10,7 +10,7 @@ from pydaten.common.transaction import Transaction
 from pydaten.common.data import NoData
 from pydaten.defaults import genesis, config
 from pydaten.core import difficulty
-from pydaten.network.wallet import Wallet
+from pydaten.crypto import ecdsa
 
 class BlockchainTest(unittest.TestCase):
 
@@ -37,7 +37,7 @@ class BlockchainTest(unittest.TestCase):
 
     def test_fork(self):
         with patch.object(difficulty,  'less_or_equal', return_value = True) as mock_less_or_equal:
-            with patch.object(Wallet,  'verify', return_value = True) as mock_verify:
+            with patch.object(ecdsa,  'verify', return_value = True) as mock_verify:
                 bc1 = Blockchain(MemoryStorage())
                 bc2 = Blockchain(MemoryStorage())
                 self.put_block(bc1)
@@ -58,7 +58,7 @@ class BlockchainTest(unittest.TestCase):
     def test_push_pop_block(self):
         config.MINIMUM_BYTE_PRICE = 0
         with patch.object(difficulty,  'less_or_equal', return_value = True) as mock_less_or_equal:
-            with patch.object(Wallet,  'verify', return_value = True) as mock_verify:
+            with patch.object(ecdsa,  'verify', return_value = True) as mock_verify:
                 bc = Blockchain(MemoryStorage())
                 self.put_block(bc, None, config.SUPPLY_NAME, BlockchainTest.BOB_ADDRESS, 1000)
                 self.assertEquals(bc.get_balance(BlockchainTest.BOB_ADDRESS), 1000)
