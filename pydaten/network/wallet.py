@@ -15,7 +15,7 @@ from pydaten.crypto import ecdsa
 
 class Wallet(LightNode):
     def __init__(self, key = None):
-        super().__init__()
+        super().__init__([])
         try:
             if key and len(key) == 32:
                 self.private_key = key
