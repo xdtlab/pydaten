@@ -394,7 +394,7 @@ class Blockchain(object):
 
         fee_transaction = Transaction(
             version = config.VERSION, target = index, fee = 0,
-            name = None,
+            name = misc.random_name(),
             source = config.NOWHERE_NAME,
             destination = miner,
             amount = fees,
@@ -404,7 +404,7 @@ class Blockchain(object):
 
         reward_transaction = Transaction(
             version = config.VERSION, target = index, fee = 0,
-            name = None,
+            name = misc.random_name(),
             source = config.SUPPLY_NAME,
             destination = miner,
             amount = reward,

@@ -27,13 +27,9 @@ class Transaction:
         stream.write_uint32(self.target)
         stream.write_uint64(self.fee)
 
-        if type(self.name) is str:
-            stream.write_uint8(1)
-            encoded_name = self.name.encode('ascii')
-            stream.write_uint8(len(encoded_name))
-            stream.write(encoded_name)
-        elif self.name is None:
-            stream.write_uint8(0)
+        encoded_name = self.name.encode('ascii')
+        stream.write_uint8(len(encoded_name))
+        stream.write(encoded_name)
 
         self.source.write(stream)
         self.destination.write(stream)
@@ -55,11 +51,7 @@ class Transaction:
         target = raw.read_uint32()
         fee = raw.read_uint64()
 
-        has_name = raw.read_uint8()
-        if has_name == 1:
-            name = raw.read(raw.read_uint8()).decode('ascii')
-        else:
-            name = None
+        name = raw.read(raw.read_uint8()).decode('ascii')
 
         source = Address.read(raw)
         destination = Address.read(raw)
