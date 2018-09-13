@@ -77,7 +77,7 @@ class World:
     def get_block_header(self, index):
         return Block.deserialize(self.root.get(b'\x01' + struct.pack('>L', index)), header_only = True)
     def clear_block_header(self, wb, index):
-        wb.delete(b'\x01' + struct.pack('>L', block.index))
+        wb.delete(b'\x01' + struct.pack('>L', index))
 
     def set_block(self, wb, block):
         self.set_block_header(wb, block)
