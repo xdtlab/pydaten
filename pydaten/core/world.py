@@ -52,13 +52,19 @@ class World:
     def clear_transaction(self, wb, name_address):
         shortcut = b'.'.join([n.encode('ascii') for n in reversed(name_address.name)])
         k = self.root.get(b'\x03' + shortcut)
+        tx = Transaction.deserialize(self.root.get(k))
+        src = self.resolve(tx.destination)
+        dst = self.resolve(tx.destination)
+        if src != config.NOWHERE_NAME:
+            self.set_balance(wb, src, self.get_balance(src) + tx.amount + tx.fee)
+        if dst != config.NOWHERE_NAME:
+            self.set_balance(wb, dst, self.get_balance(dst) - tx.amount)
         wb.delete(b'\x03' + shortcut)
         wb.delete(b'\x04' + shortcut)
         wb.delete(k)
 
     def push_block(self, block):
         height = self.get_height()
-        print(block.index)
         if block.index == height:
             with self.root.write_batch() as wb:
                 self.set_height(wb, height + 1)
@@ -94,7 +100,8 @@ class World:
         self.clear_block_header(wb, index)
         prefix = b'\x02' + struct.pack('>L', index)
         for tx in self.root.iterator(prefix = prefix, include_value = False):
-            wb.delete(self.root.get(tx))
+            addr = Transaction.deserialize(self.root.get(self.root.get(tx))).address()
+            self.clear_transaction(wb, addr)
             wb.delete(tx)
 
     def get_latest_block(self):
@@ -125,23 +132,3 @@ class World:
         for k, v in self.root.iterator(prefix = prefix):
             result.append(Transaction.deserialize(v))
         return result
-
-
-if __name__ == '__main__':
-    w = World()
-    #print(w.children(Address.from_string("")))
-    wb = w.root.write_batch()
-    w.push_block(genesis.genesis_block())
-    #print(w.get_height())
-    #print(w.children(Address.from_string(""))[2].name)
-    #print(w.get_block(0).transactions[2].amount)
-    #w.pop_block()
-    #w.set_height(wb, 1)
-    #tx = genesis.genesis_block().transactions[0]
-    #w.clear_transaction(wb, tx.address())
-    #raw = w.resolve(tx.address())
-    #w.set_balance(wb, raw, 0)
-    #print(w.get_balance(genesis.SUPPLY_NAME))
-    #w.set_transaction(wb, 7, tx)
-    wb.write()
-    #print(w.get_height())
