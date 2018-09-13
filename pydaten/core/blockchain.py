@@ -16,27 +16,19 @@ from pydaten.common.data import NoData
 from pydaten.common.address import *
 from pydaten.core.errors import *
 from pydaten.crypto import ecdsa
-
-class Leaf:
-    def __init__(self, raw_address, target):
-        self.raw_address = raw_address
-        self.target = target
-        self.children = {}
+from pydaten.core.world import World
 
 class Blockchain(object):
 
-    def __init__(self, storage):
-        self.storage = storage
-        self.balance_cache = {}
-        self.root = Leaf(None, None)
-        self.latest_block = None
+    def __init__(self, path):
+        self.world = World(path)
         self.transactions = []
-        self.latest_block_lock = threading.RLock()
-        self.push_block(genesis.genesis_block())
-        self.seek()
+        self.lock = threading.RLock()
+        if self.get_height() == 0:
+            self.push_block(genesis.genesis_block())
 
     def get_block(self, index):
-        return self.storage.load(index)
+        return self.world.get_block(index)
 
     def get_block_range(self, start, end):
         return [self.get_block(i) for i in range(start, end)]
@@ -45,96 +37,34 @@ class Blockchain(object):
         return self.get_block_range(0, self.get_height())
 
     def get_latest_block(self):
-        return self.latest_block
+        return self.world.get_latest_block()
 
     def get_height(self):
-        return self.latest_block.index + 1 if self.latest_block else 0
+        return self.world.get_height()
 
-    def save_block(self, block):
-        self.storage.save(block)
-
-    def seek(self):
-        while True:
-            try:
-                self.push_block(self.get_block(self.get_height()), save = False)
-            except:
-                break
-
-    def find(self, address):
-        if type(address) is NameAddress:
-            current = self.root
-            for n in reversed(address.name):
-                if n in current.children:
-                    current = current.children[n]
-                else:
-                    return None
-            return current
-        elif type(address) is RawAddress:
-            return self.root
-
-    def set(self, name_address, raw_address, target):
-        first, rest = name_address.pop()
-        leaf = self.find(rest)
-        leaf.children[first] = Leaf(raw_address, target)
-
-    def clear(self, name_address):
-        first, rest = name_address.pop()
-        leaf = self.find(rest)
-        del leaf.children[first]
-
-    # Gets address and returns the corresponding RawAddress (public-key).
     def resolve(self, address):
-        if type(address) is RawAddress:
-            return address
-        else:
-            leaf = self.find(address)
-            return leaf.raw_address if leaf else None
+        try:
+            return self.world.resolve(address)
+        except:
+            return None
 
-    # Gets a RawAddress (public-key) and returns its corresponding balance.
     def get_balance(self, raw_address):
-        return self.balance_cache[raw_address] if raw_address in self.balance_cache else 0
+        return self.world.get_balance(raw_address)
 
     def pop_block(self):
-        with self.latest_block_lock:
-            popped = self.latest_block
-            for transaction in self.latest_block.transactions:
-                source = self.resolve(transaction.source)
-                destination = self.resolve(transaction.destination)
-                self.balance_cache[source] += transaction.fee
-                self.balance_cache[source] += transaction.amount
-                self.balance_cache[destination] -= transaction.amount
-                if transaction.name:
-                    self.clear(transaction.address())
-
-            self.latest_block = self.get_block(self.latest_block.index - 1) if self.latest_block.index > 0 else None
+        with self.lock:
+            popped = self.world.pop_block()
             self.transactions = []
             return popped
 
-    def push_block(self, block, save = True):
-        with self.latest_block_lock:
+    def push_block(self, block):
+        with self.lock:
             self.is_next_block(block)
-            self.latest_block = block
+            self.world.push_block(block)
             self.transactions = []
 
-            for transaction in block.transactions:
-                source = self.resolve(transaction.source)
-                destination = self.resolve(transaction.destination)
-                if source not in self.balance_cache:
-                    self.balance_cache[source] = 0
-                self.balance_cache[source] -= transaction.fee
-                self.balance_cache[source] -= transaction.amount
-                if destination not in self.balance_cache:
-                    self.balance_cache[destination] = 0
-                self.balance_cache[destination] += transaction.amount
-
-                if transaction.name:
-                    self.set(transaction.address(), transaction.source, transaction.target)
-
-            if save:
-                self.save_block(block)
-
     def calculate_hash_difficulty(self):
-        block = self.latest_block
+        block = self.get_latest_block()
         current_difficulty = difficulty.decompress(block.difficulty)
         if block.index > 0 and block.index % config.DIFFICULTY_ADJUSTMENT_SPAN == 0:
             block_delta = self.get_block(block.index - config.DIFFICULTY_ADJUSTMENT_SPAN)
@@ -158,18 +88,18 @@ class Blockchain(object):
 
     def is_next_block(self, block):
         # Check genesis block
-        if self.latest_block is None and block == genesis.genesis_block():
+        if self.get_height() == 0 and block == genesis.genesis_block():
             return
 
         # Check if it is a valid block
         self.is_valid_block(block)
 
         # Check if it is the next block
-        if block.index != self.latest_block.index + 1:
+        if block.index != self.get_height():
             raise InvalidIndex()
 
         # Check if it points to the previous block
-        if block.previous_hash != self.latest_block.calculate_hash():
+        if block.previous_hash != self.get_latest_block().calculate_hash():
             raise InvalidPreviousHash()
 
         # Check if timestamp is logical
@@ -242,7 +172,7 @@ class Blockchain(object):
             raise InvalidBlock()
 
         # Check if it isn't an old block
-        if block.index <= self.latest_block.index:
+        if block.index < self.get_height():
             raise BlockOld()
 
         # Check if minimum PoW has been done on it
@@ -256,11 +186,12 @@ class Blockchain(object):
         return True
 
     def fork(self, blocks):
-        with self.latest_block_lock:
+        with self.lock:
             prev_height = self.get_height()
             fork_height = blocks[0].index - 1
             popped = []
-            while self.get_latest_block().index != fork_height:
+            latest_block = self.get_latest_block()
+            while latest_block.index != fork_height:
                 popped.append(self.pop_block())
             for b in blocks:
                 try:
@@ -270,7 +201,7 @@ class Blockchain(object):
             if self.get_height() > prev_height:
                 return True
             else:
-                while self.get_latest_block().index != fork_height:
+                while latest_block.index != fork_height:
                     self.pop_block()
                 while popped:
                     self.push_block(popped.pop())
@@ -286,7 +217,7 @@ class Blockchain(object):
             raise NotSupportedTransaction()
 
         # Check if it is in the next blocks
-        if transaction.target < self.latest_block.index + 1:
+        if transaction.target < self.get_height():
             raise InvalidTransactionTarget()
 
         # Check if name has not taken yet
@@ -312,7 +243,7 @@ class Blockchain(object):
         self.is_valid_transaction(transaction)
 
         # Check if it is in the next block
-        if transaction.target != self.latest_block.index + 1:
+        if transaction.target != self.get_height():
             raise InvalidTransactionTarget()
 
         # Check if it is not a duplicate transaction
@@ -342,10 +273,11 @@ class Blockchain(object):
         self.transactions.append(transaction)
 
     def latest(self, address):
+        latest_block = self.get_latest_block()
         address = self.resolve(address)
         history = []
-        start = max(self.latest_block.index - config.QUERY_MAX_BLOCKS, 0)
-        end = self.latest_block.index + 1
+        start = max(latest_block.index - config.QUERY_MAX_BLOCKS, 0)
+        end = latest_block.index + 1
         for i in range(start, end):
             block = self.get_block(i)
             for tx in block.transactions:
@@ -359,23 +291,12 @@ class Blockchain(object):
         # This is a very huge query.
         if name is None and destination is None:
             return []
-
-        history = []
-        leaf = self.find(destination) if destination else self.root
-
-        # Destination not found!
-        if not leaf:
-            return []
-
-        if not name:
-            leaves = leaf.children.values()
-        else:
-            leaves = [leaf.children[name]] if name in leaf.children else []
-        for target in {leaf.target for leaf in leaves}:
-            for tx in self.get_block(target).transactions:
-                if (tx.destination == destination if destination else type(tx.destination) is RawAddress) and (not name or tx.name == name):
-                    history.append(tx)
-        return history
+        elif name is None and destination is not None:
+            return self.world.children(destination)
+        elif name is not None and destination is not None:
+            return [self.world.get_transaction(destination.push(name))]
+        elif name is not None and destination is None:
+            return [self.world.get_transaction(NameAddress((name,)))]
 
     def new_block(self, miner, timestamp):
 
@@ -385,8 +306,9 @@ class Blockchain(object):
 
         reward = self.calculate_reward()
 
-        index = self.latest_block.index + 1
-        previous_hash = self.latest_block.calculate_hash()
+        latest_block = self.get_latest_block()
+        index = latest_block.index + 1
+        previous_hash = latest_block.calculate_hash()
         transactions = list(self.transactions)
 
         # Sort by byte-price.

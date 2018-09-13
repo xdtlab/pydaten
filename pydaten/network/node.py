@@ -17,7 +17,6 @@ import pkg_resources
 
 from pydaten.network.lightnode import LightNode
 from pydaten.core.blockchain import Blockchain
-from pydaten.core.storage import FileStorage, CachedStorage
 from pydaten.common.transaction import Transaction
 from pydaten.common.block import Block
 from pydaten.defaults import config
@@ -44,7 +43,7 @@ class Node(LightNode):
         self.host = host
 
         print("Loading the blockchain...")
-        self.blockchain = Blockchain(CachedStorage(FileStorage(self.path)))
+        self.blockchain = Blockchain(self.path)
 
         print("Starting a full-node on " + self.host + "...")
         self.block_queue = Queue()
@@ -214,8 +213,7 @@ class Node(LightNode):
     async def query(self, request):
         name = request.query.get('name', None)
         destination = request.query.get('destination', None)
-        if destination:
-            destination = Address.from_string(destination)
+        destination = Address.from_string(destination) if destination else None
         txs = self.blockchain.query(name = name, destination = destination)
         return web.Response(body=Transaction.serialize_list(txs))
 
