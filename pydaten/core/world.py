@@ -13,6 +13,7 @@ def _tx_key(name_address):
 class World:
     HEIGHT_PREFIX = b'\x00'
     HEADER_PREFIX = b'\x01'
+    TRANSACTION_PREFIX = b'\x06'
     BLOCK_TRANSACTION_PREFIX = b'\x02'
     SHORTCUT_PREFIX = b'\x03'
     RESOLVE_PREFIX = b'\x04'
@@ -34,19 +35,18 @@ class World:
         addr = transaction.address()
         name, rest = addr.pop()
         bs = ByteStream()
-        bs.write(_tx_key(rest))
-        bs.write(b'|')
+        bs.write(World.TRANSACTION_PREFIX + _tx_key(rest) + b'|')
         bs.write_uint32(transaction.target)
         bs.write_uint16(index)
         bs.write(name.encode('ascii'))
         k = bs.value()
         wb.put(k, transaction.serialize())
-        shortcut = _tx_key(addr)
-        wb.put(World.SHORTCUT_PREFIX + shortcut, k)
+        addr_key = _tx_key(addr)
+        wb.put(World.SHORTCUT_PREFIX + addr_key, k)
         bs = ByteStream()
         src = self.resolve(transaction.source)
         src.write(bs)
-        wb.put(World.RESOLVE_PREFIX + shortcut, bs.value())
+        wb.put(World.RESOLVE_PREFIX + addr_key, bs.value())
         dst = self.resolve(transaction.destination)
         return k
 
@@ -54,10 +54,10 @@ class World:
         k = self.root.get(World.SHORTCUT_PREFIX + _tx_key(name_address))
         return Transaction.deserialize(self.root.get(k))
     def clear_transaction(self, wb, name_address):
-        shortcut = _tx_key(name_address)
-        k = self.root.get(World.SHORTCUT_PREFIX + shortcut)
-        wb.delete(World.SHORTCUT_PREFIX + shortcut)
-        wb.delete(World.RESOLVE_PREFIX + shortcut)
+        addr_key = _tx_key(name_address)
+        k = self.root.get(World.SHORTCUT_PREFIX + addr_key)
+        wb.delete(World.SHORTCUT_PREFIX + addr_key)
+        wb.delete(World.RESOLVE_PREFIX + addr_key)
         wb.delete(k)
 
     def push_block(self, block):
@@ -141,7 +141,7 @@ class World:
                 raise Exception("Invalid name!")
 
     def children(self, name_address):
-        prefix = _tx_key(name_address) + b'|'
+        prefix = World.TRANSACTION_PREFIX + _tx_key(name_address) + b'|'
         result = []
         for k, v in self.root.iterator(prefix = prefix):
             result.append(Transaction.deserialize(v))
