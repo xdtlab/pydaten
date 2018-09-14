@@ -83,9 +83,9 @@ class World:
             wb.put(World.BLOCK_TRANSACTION_PREFIX + struct.pack('>LL', block.index, ind), k)
             src = self.resolve(tx.source)
             dst = self.resolve(tx.destination)
-            if src.public_key not in balance:
+            if src not in balance:
                 balance[src] = 0
-            if dst.public_key not in balance:
+            if dst not in balance:
                 balance[dst] = 0
             balance[src] -= (tx.fee + tx.amount)
             balance[dst] += tx.amount
