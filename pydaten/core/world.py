@@ -20,7 +20,7 @@ class World:
     BALANCE_PREFIX = b'\x05'
 
     def __init__(self, path):
-        self.root = plyvel.DB(path, create_if_missing = True)
+        self.root = plyvel.DB(path, create_if_missing = True, paranoid_checks = True)
 
     def get_height(self):
         result = self.root.get(World.HEIGHT_PREFIX)
