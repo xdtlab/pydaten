@@ -190,8 +190,7 @@ class Blockchain(object):
             prev_height = self.get_height()
             fork_height = blocks[0].index - 1
             popped = []
-            latest_block = self.get_latest_block()
-            while latest_block.index != fork_height:
+            while self.get_height() - 1 != fork_height:
                 popped.append(self.pop_block())
             for b in blocks:
                 try:
@@ -201,7 +200,7 @@ class Blockchain(object):
             if self.get_height() > prev_height:
                 return True
             else:
-                while latest_block.index != fork_height:
+                while self.get_height() - 1 != fork_height:
                     self.pop_block()
                 while popped:
                     self.push_block(popped.pop())
