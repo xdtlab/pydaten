@@ -39,10 +39,6 @@ class World:
         src.write(bs)
         wb.put(b'\x04' + shortcut, bs.value())
         dst = self.resolve(transaction.destination)
-        if src != config.NOWHERE_NAME:
-            self.set_balance(wb, src, self.get_balance(src) - transaction.amount - transaction.fee)
-        if dst != config.NOWHERE_NAME:
-            self.set_balance(wb, dst, self.get_balance(dst) + transaction.amount)
         return k
 
     def get_transaction(self, name_address):
@@ -52,13 +48,6 @@ class World:
     def clear_transaction(self, wb, name_address):
         shortcut = b'.'.join([n.encode('ascii') for n in reversed(name_address.name)])
         k = self.root.get(b'\x03' + shortcut)
-        tx = Transaction.deserialize(self.root.get(k))
-        src = self.resolve(tx.destination)
-        dst = self.resolve(tx.destination)
-        if src != config.NOWHERE_NAME:
-            self.set_balance(wb, src, self.get_balance(src) + tx.amount + tx.fee)
-        if dst != config.NOWHERE_NAME:
-            self.set_balance(wb, dst, self.get_balance(dst) - tx.amount)
         wb.delete(b'\x03' + shortcut)
         wb.delete(b'\x04' + shortcut)
         wb.delete(k)
@@ -87,9 +76,21 @@ class World:
 
     def set_block(self, wb, block):
         self.set_block_header(wb, block)
+        balance = {}
         for ind, tx in enumerate(block.transactions):
             k = self.set_transaction(wb, ind, tx)
             wb.put(b'\x02' + struct.pack('>LL', block.index, ind), k)
+            src = self.resolve(tx.source)
+            dst = self.resolve(tx.destination)
+            if src.public_key not in balance:
+                balance[src] = 0
+            if dst.public_key not in balance:
+                balance[dst] = 0
+            balance[src] -= (tx.fee + tx.amount)
+            balance[dst] += tx.amount
+        for raw, bal in balance.items():
+            if raw != config.NOWHERE_NAME:
+                self.set_balance(wb, raw, self.get_balance(raw) + bal)
     def get_block(self, index):
         block = self.get_block_header(index)
         prefix = b'\x02' + struct.pack('>L', index)
@@ -99,10 +100,23 @@ class World:
     def clear_block(self, wb, index):
         self.clear_block_header(wb, index)
         prefix = b'\x02' + struct.pack('>L', index)
+        balance = {}
         for tx in self.root.iterator(prefix = prefix, include_value = False):
-            addr = Transaction.deserialize(self.root.get(self.root.get(tx))).address()
+            transact = Transaction.deserialize(self.root.get(self.root.get(tx)))
+            addr = transact.address()
             self.clear_transaction(wb, addr)
+            src = self.resolve(transact.source)
+            dst = self.resolve(transact.destination)
+            if src not in balance:
+                balance[src] = 0
+            if dst not in balance:
+                balance[dst] = 0
+            balance[src] += (transact.fee + transact.amount)
+            balance[dst] -= transact.amount
             wb.delete(tx)
+        for raw, bal in balance.items():
+            if raw != config.NOWHERE_NAME:
+                self.set_balance(wb, raw, self.get_balance(raw) + bal)
 
     def get_latest_block(self):
         return self.get_block(self.get_height() - 1)
