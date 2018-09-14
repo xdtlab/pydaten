@@ -67,15 +67,8 @@ class World:
             self.clear_block(wb, latest.index)
         return latest
 
-    def set_block_header(self, wb, header):
-        wb.put(b'\x01' + struct.pack('>L', header.index), header.serialize(header_only = True))
-    def get_block_header(self, index):
-        return Block.deserialize(self.root.get(b'\x01' + struct.pack('>L', index)), header_only = True)
-    def clear_block_header(self, wb, index):
-        wb.delete(b'\x01' + struct.pack('>L', index))
-
     def set_block(self, wb, block):
-        self.set_block_header(wb, block)
+        wb.put(b'\x01' + struct.pack('>L', block.index), block.serialize(header_only = True))
         balance = {}
         for ind, tx in enumerate(block.transactions):
             k = self.set_transaction(wb, ind, tx)
@@ -92,13 +85,13 @@ class World:
             if raw != config.NOWHERE_NAME:
                 self.set_balance(wb, raw, self.get_balance(raw) + bal)
     def get_block(self, index):
-        block = self.get_block_header(index)
+        block = Block.deserialize(self.root.get(b'\x01' + struct.pack('>L', index)), header_only = True)
         prefix = b'\x02' + struct.pack('>L', index)
         txs = list(self.root.iterator(prefix = prefix, include_key = False))
         block.transactions = [Transaction.deserialize(self.root.get(tx)) for tx in txs]
         return block
     def clear_block(self, wb, index):
-        self.clear_block_header(wb, index)
+        wb.delete(b'\x01' + struct.pack('>L', index))
         prefix = b'\x02' + struct.pack('>L', index)
         balance = {}
         for tx in self.root.iterator(prefix = prefix, include_value = False):
