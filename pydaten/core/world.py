@@ -143,4 +143,7 @@ class World:
         return struct.unpack('>Q', result)[0] if result else 0
     def _set_balance(self, wb, raw_address, balance):
         k = World.BALANCE_PREFIX + raw_address.public_key
-        wb.put(k, struct.pack('>Q', balance))
+        if balance != 0:
+            wb.put(k, struct.pack('>Q', balance))
+        else:
+            wb.delete(k) # No need to store balance when it is zero.
