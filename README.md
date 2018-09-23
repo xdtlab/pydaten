@@ -11,7 +11,9 @@ I, as a Software Engineer, interested in Blockchain stuff, decided to design and
 
 Daten is a P2P NoSQL data storage network, heavily inspired from the original Bitcoin design with some simplifications and features. Like Bitcoin, The Daten Network consists of miners who verify the transactions by doing PoW on blocks. Accounts are simply private-key and public-key pairs, which have some balance in themselves.
 
-Users are able to attach different types of data to the transactions. The difference is, those data are **_queryable_**. Attachments are not free, just as regular transactions in other cryptocurrencies cost a fee.
+Unlike regular cryptocurrencies in which transactions are just means of transfering value, in Daten network, every transaction is also a record in a database with a unique identifier.
+
+Users are able to attach different types of data to the transactions. The difference is, those data are **_indexed_** and **_queryable_**. Attachments are not free, just as regular transactions in other cryptocurrencies cost a fee.
 
 There have been several design goals for this project:
  - Easily queryable data
@@ -31,8 +33,11 @@ With Daten, you can upload files on the blockchain, securely chat with your frie
 As an example, users can build a Twitter-like social network on top of Daten, without the need of a remote server, with everything, including the HTML pages, CSS styles, JS files and images uploaded in the blockchain itself.
 
 ## Data and Addresses, building blocks of the Daten Network
+All of the transactions in the Daten blockc\ have unique identifiers associated with them. These identifiers are dot-separated names, representing a huge tree of data.
 Each transaction in the Daten blockchain has a property called **data** which is used to store up to 64KB of data with different types, including **Strings**, **Bytes**, **Booleans**,  **Decimals**, **Maps**, **Lists** (and **Functions** in the future) in itself.
-One unique feature of the Daten blockchain is that transactions can be referenced somehow as users are able to assign a name for their transactions.
+Daten nodes are continuously indexing the incoming transactions in their database, which is used to store entire transaction history of the Daten blockchain.
+There are currently two ways for querying this database. You can either find a transaction by its full-name or find all transactions associated with children of a particular name. Both of those operations are fast and efficient.
+Consider the blog example mentioned earlier, you can find contents of the second post of Alice by querying `post2.alice.blog`, or you can find all comments attached to the first post of Bob by querying `*.post1.bob`.
 One who has created and signed a transaction, owns the name of that transactions, and that means, if other users ever transfer money to this name (Instead of a public-key), the public-key will be the final owner of that money.
 
  - If you send a transaction to a public-key with name `alice`, she will own the name `alice`.
