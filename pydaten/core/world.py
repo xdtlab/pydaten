@@ -66,12 +66,7 @@ class World:
     def _set_transaction(self, wb, index, transaction):
         addr = transaction.address()
         name, rest = addr.pop()
-        bs = ByteStream()
-        bs.write(World.TRANSACTION_PREFIX + _tx_key(rest) + b'|')
-        bs.write_uint32(transaction.target)
-        bs.write_uint16(index)
-        bs.write(name.encode('ascii'))
-        k = bs.value()
+        k = World.TRANSACTION_PREFIX + _tx_key(rest) + b'|' + struct.pack('>L', index)
         wb.put(k, transaction.serialize())
         addr_key = _tx_key(addr)
         wb.put(World.SHORTCUT_PREFIX + addr_key, k)
@@ -91,11 +86,23 @@ class World:
         wb.delete(World.RESOLVE_PREFIX + addr_key)
         wb.delete(k)
 
+    def _child_count(self, name):
+        prefix = World.TRANSACTION_PREFIX + _tx_key(name) + b'|'
+        try:
+            latest = next(self.root.iterator(prefix = prefix, reverse = True, include_value = False))
+            latest = latest[len(prefix):len(prefix)+4]
+            return struct.unpack('>L', latest)[0] + 1
+        except StopIteration:
+            return 0
+
     def _set_block(self, wb, block):
         wb.put(World.HEADER_PREFIX + struct.pack('>L', block.index), block.serialize(header_only = True))
         balance = {}
+        indices = {}
         for ind, tx in enumerate(block.transactions):
-            k = self._set_transaction(wb, ind, tx)
+            parent = tx.address().pop()[1]
+            indices[parent] = self._child_count(parent) if parent not in indices else indices[parent] + 1
+            k = self._set_transaction(wb, indices[parent], tx)
             wb.put(World.BLOCK_TRANSACTION_PREFIX + struct.pack('>LL', block.index, ind), k)
             src = self.resolve(tx.source)
             dst = self.resolve(tx.destination)
