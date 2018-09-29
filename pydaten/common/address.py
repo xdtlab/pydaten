@@ -63,7 +63,14 @@ class NameAddress(Address):
 
     TYPE_ID = 1
 
+    def valid_part(part):
+        allowed_chars = string.ascii_lowercase + string.digits + '-'
+        return len(part) >= 1 and len(part) <= 16 and all(c in allowed_chars for c in part)
+
     def __init__(self, name):
+        for part in name:
+            if not NameAddress.valid_part(part):
+                raise Exception("Invalid name!")
         self.name = name
 
     def write(self, stream):

@@ -6,7 +6,7 @@ import io
 from pydaten.utils.bytestream import ByteStream
 from pydaten.defaults import config
 from pydaten.common.data import Data
-from pydaten.common.address import Address
+from pydaten.common.address import Address, NameAddress
 
 class Transaction:
 
@@ -74,7 +74,8 @@ class Transaction:
         return self.serialize(signature_included = False)
 
     def valid(self):
-        return True
+        result = NameAddress.valid_part(self.name)
+        return result
 
     def serialize_list(transactions):
         raw = ByteStream()
