@@ -36,11 +36,13 @@ class Node(LightNode):
         resp.headers['ACCESS-CONTROL-ALLOW-ORIGIN'] = '*'
         return resp
 
-    def __init__(self, host, ip, port, path, initial_peers):
+    def __init__(self, host, ip, port, path, initial_peers, username, password):
         super().__init__(initial_peers)
 
         self.path = path
         self.host = host
+        self.username = username
+        self.password = password
 
         print("Loading the blockchain...")
         self.blockchain = Blockchain(self.path)
@@ -389,6 +391,10 @@ class Node(LightNode):
                 })
 
     async def mine(self, request):
+        username = request.query.get('username', None)
+        password = request.query.get('password', None)
+        if username != self.username or password != self.password:
+            return web.json_response(data = { 'ok': False, 'error': 'Auth failed!' })
 
         miner_address = Address.from_string(request.query.get('address', None))
         if self.blockchain.resolve(miner_address) is None:

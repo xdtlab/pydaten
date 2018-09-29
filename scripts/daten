@@ -8,6 +8,8 @@ from pydaten.utils.misc import get_public_ip
 
 import argparse
 
+DEFAULT_USERNAME = 'admin'
+DEFAULT_PASSWORD = 'admin'
 DEFAULT_IP = '0.0.0.0'
 DEFAULT_PORT = 32323
 try:
@@ -30,7 +32,9 @@ if __name__ == '__main__':
                   'ip': DEFAULT_IP,
                   'port': DEFAULT_PORT,
                   'path': os.path.join(CONFIG_DIR, 'data'),
-                  'initialPeers': DEFAULT_INITIAL_PEERS}
+                  'initialPeers': DEFAULT_INITIAL_PEERS,
+                  'username': DEFAULT_USERNAME,
+                  'password': DEFAULT_PASSWORD}
         with io.open(CONFIG_PATH, 'w') as f:
             json.dump(config, f, indent = 2)
 
@@ -47,4 +51,6 @@ if __name__ == '__main__':
                 args.ip or config['ip'],
                 args.port or config['port'],
                 args.path or config['path'],
-                args.init or config['initialPeers'])
+                args.init or config['initialPeers'],
+                config['username'],
+                config['password'])
