@@ -141,53 +141,12 @@ After setting up the configurations you can run your node:
 daten
 ```
 ### Start developing Daten dApps using daten.js
-Guide on how to develop Daten dApps using JavaScript.
-
-#### Connecting to a Daten node
-First you should connect to a Daten node by creating a wallet object. It accepts an initial node address as its first argument.
-
-```js
-var wallet = new daten.Wallet("nd1.daten.cash:32323");
-```
-
-#### Get node status
-You can get the state of a random node in the network like this:
-```js
-wallet.getStatus(function(state) {
-  alert(state.height);
-});
-```
-
-#### Listen to transactions
-Listen to incoming transactions to a specific address:
-```js
-wallet.listen(address, function(tx) {
-});
-```
-
-#### Send transactions
-Send transactions:
-```js
-wallet.sendTransaction(tx, onResult, onError);
-```
-
-#### Query data
-Find data:
-```js
-wallet.query(params, function(txs) {
-});
-```
-
-#### Confirming transactions
-Confirm transactions:
-```js
-wallet.confirm(tx, maxConfirmations, function(confirmations, hashTries) {
-});
-```
+A guide on how to develop Daten dApps using JavaScript is here:
+[https://github.com/xdtlab/daten.js](https://github.com/xdtlab/daten.js)
 
 ### Mining
-Start earning Datens!
-Connect to a mining Daten node or Mining pool!
+Start mining Daten tokens using arbeit!
+[https://github.com/xdtlab/arbeit](https://github.com/xdtlab/arbeit)
 
 ## Illegal contents
 A major problem in blockchains that store data.
