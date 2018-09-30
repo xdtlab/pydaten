@@ -106,7 +106,7 @@ Daten uses **Argon2i** as its PoW hash function.
 git clone https://github.com/xdtlab/pydaten.git
 cd ./pydaten
 docker build -t daten .
-docker run daten -p 32323:32323
+docker run -v /path/to/data:/data -p 32323:32323 daten
 ```
 
 #### Normal way

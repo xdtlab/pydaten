@@ -7,4 +7,4 @@ COPY requirements.txt /pydaten
 RUN pip install -r requirements.txt
 COPY . /pydaten
 RUN python setup.py install
-ENTRYPOINT ["daten"]
+ENTRYPOINT ["daten", "--path=/data"]
