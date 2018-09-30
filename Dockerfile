@@ -1,4 +1,5 @@
 FROM python:3.5-alpine
+RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
 RUN apk add --no-cache build-base libffi-dev gmp-dev leveldb-dev
 RUN mkdir /pydaten
 WORKDIR /pydaten
