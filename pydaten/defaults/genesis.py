@@ -12,12 +12,12 @@ CONTRIBUTORS_NAME = RawAddress(bytes.fromhex('028190dda77ea5252862d2a86ea1a01b79
 CONTRIBUTORS_INITIAL_BALANCE = SUPPLY // 5 # 20% of all assets
 SUPPLY_INITIAL_BALANCE = SUPPLY - FOUNDER_INITIAL_BALANCE - CONTRIBUTORS_INITIAL_BALANCE
 GENESIS_TIMESTAMP = 1514628754
-GENESIS_NONCE = 11104
+GENESIS_NONCE = 259
 
 def genesis_block():
     supply_account = Transaction(
         version = 0, target = 0, fee = 0,
-        name = '7uIL6uKyfmRjkFBo',
+        name = 'jbi5ji5bda7e6m78',
         source = NOWHERE_NAME,
         destination = SUPPLY_NAME,
         amount = SUPPLY_INITIAL_BALANCE,
@@ -26,7 +26,7 @@ def genesis_block():
 
     founder_account = Transaction(
         version = 0, target = 0, fee = 0,
-        name = 'e66MWcUvCYbuMk7X',
+        name = 'nsu6b7uyujbgemk6',
         source = NOWHERE_NAME,
         destination = FOUNDER_NAME,
         amount = FOUNDER_INITIAL_BALANCE,
@@ -35,7 +35,7 @@ def genesis_block():
 
     contributors_account = Transaction(
         version = 0, target = 0, fee = 0,
-        name = 'On0S63NUyPmC0hUH',
+        name = 'd3ym5m81dcgtieh4',
         source = NOWHERE_NAME,
         destination = CONTRIBUTORS_NAME,
         amount = CONTRIBUTORS_INITIAL_BALANCE,

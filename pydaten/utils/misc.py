@@ -1,6 +1,6 @@
 import string, random
 def random_name(length = 16):
-    chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
+    chars = string.ascii_lowercase + string.digits
     return ''.join([random.choice(chars) for _ in range(length)])
 
 def median(lst):
