@@ -154,12 +154,12 @@ class Blockchain(object):
 
         # Check fee transaction
         fee_transaction = block.transactions[-2]
-        if fee_transaction.source != config.NOWHERE_NAME or fee_transaction.amount != fees or self.resolve(fee_transaction.destination) is None:
+        if not fee_transaction.valid() or fee_transaction.source != config.NOWHERE_NAME or fee_transaction.amount != fees or self.resolve(fee_transaction.destination) is None:
             raise InvalidFeeTransaction()
 
         # Check reward transaction
         reward_transaction = block.transactions[-1]
-        if reward_transaction.source != config.SUPPLY_NAME or reward_transaction.amount != self.calculate_reward() or self.resolve(reward_transaction.destination) is None:
+        if not reward_transaction.valid() or reward_transaction.source != config.SUPPLY_NAME or reward_transaction.amount != self.calculate_reward() or self.resolve(reward_transaction.destination) is None:
             raise InvalidRewardTransaction()
 
     def is_valid_block(self, block):
