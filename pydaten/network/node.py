@@ -269,9 +269,12 @@ class Node(LightNode):
 
     def heartbeat(self):
         while True:
-            self.update_peers()
-            self.broadcast_node(self.host)
-            self.adjust_network_time()
+            try:
+                self.update_peers()
+                self.broadcast_node(self.host)
+                self.adjust_network_time()
+            except Exception as ex:
+                print("An unhandled exception occurred!", ex)
             time.sleep(config.HEARTBEAT_INTERVAL)
 
 
@@ -279,25 +282,29 @@ class Node(LightNode):
         latest_index = self.blockchain.get_latest_block().index
         while True:
             b = self.block_queue.get()
-            if b.index > self.blockchain.get_latest_block().index + 1:
-                # Synchronize just with that peer!
-                self.synchronize()
-            else:
-                try:
-                    ok, total = self.broadcast_block(b)
-                    if total and ok / total < 0.5:
-                        self.synchronize()
-                    else:
-                        self.blockchain.push_block(b)
-                except:
-                    pass
-            if latest_index != self.blockchain.get_latest_block().index:
-                latest_block = self.blockchain.get_latest_block()
-                latest_index = latest_block.index
-                print("Block {} - {}".format(latest_block.index,latest_block.calculate_hash().hex()))
+            try:
+                if b.index > self.blockchain.get_latest_block().index + 1:
+                    # Synchronize just with that peer!
+                    self.synchronize()
+                else:
+                    try:
+                        ok, total = self.broadcast_block(b)
+                        if total and ok / total < 0.5:
+                            self.synchronize()
+                        else:
+                            self.blockchain.push_block(b)
+                    except:
+                        pass
+                if latest_index != self.blockchain.get_latest_block().index:
+                    latest_block = self.blockchain.get_latest_block()
+                    latest_index = latest_block.index
+                    print("Block {} - {}".format(latest_block.index,latest_block.calculate_hash().hex()))
 
-            coro = self.mine_next_block()
-            asyncio.run_coroutine_threadsafe(coro, self.app.loop)
+                coro = self.mine_next_block()
+                asyncio.run_coroutine_threadsafe(coro, self.app.loop)
+
+            except Exception as ex:
+                print("An unhandled exception occurred!", ex)
 
     def transaction_exists(self, transaction):
         if transaction.target not in self.transaction_pool:
@@ -325,8 +332,8 @@ class Node(LightNode):
                         coro = ws.send_bytes(tx.serialize())
                         asyncio.run_coroutine_threadsafe(coro, self.app.loop)
                 self.broadcast_transaction(tx)
-            except:
-                pass
+            except Exception as ex:
+                print("An unhandled exception occurred!", ex)
 
     def synchronize_with(self, peer):
         latest_block = self.blockchain.get_latest_block()
