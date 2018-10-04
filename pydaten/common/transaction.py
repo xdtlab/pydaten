@@ -7,6 +7,7 @@ from pydaten.utils.bytestream import ByteStream
 from pydaten.defaults import config
 from pydaten.common.data import Data
 from pydaten.common.address import Address, NameAddress
+from pydaten.common.errors import *
 
 class Transaction:
 
@@ -45,24 +46,27 @@ class Transaction:
         return stream.value()
 
     def deserialize(serialized, signature_included = True):
-        raw = ByteStream(serialized)
+        try:
+            raw = ByteStream(serialized)
 
-        version = raw.read_uint8()
-        target = raw.read_uint32()
-        fee = raw.read_uint64()
+            version = raw.read_uint8()
+            target = raw.read_uint32()
+            fee = raw.read_uint64()
 
-        name = raw.read(raw.read_uint8()).decode('ascii')
+            name = raw.read(raw.read_uint8()).decode('ascii')
 
-        source = Address.read(raw)
-        destination = Address.read(raw)
+            source = Address.read(raw)
+            destination = Address.read(raw)
 
-        amount = raw.read_uint64()
+            amount = raw.read_uint64()
 
-        data = Data.read(raw)
+            data = Data.read(raw)
 
-        signature = raw.read(raw.read_uint8()) if signature_included else None
+            signature = raw.read(raw.read_uint8()) if signature_included else None
 
-        return Transaction(version, target, fee, name, source, destination, amount, data, signature)
+            return Transaction(version, target, fee, name, source, destination, amount, data, signature)
+        except:
+            raise TransactionCorrupted()
 
     def address(self):
         return self.destination.push(self.name)

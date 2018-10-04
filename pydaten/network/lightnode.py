@@ -6,6 +6,7 @@ import time
 
 from pydaten.defaults import config
 from pydaten.common.block import Block
+from pydaten.common.errors import CommonException
 from pydaten.core.blockchain import Blockchain
 
 class LightNode:
@@ -70,8 +71,10 @@ class LightNode:
         try:
             response = requests.get(url)
             if response.status_code == 200:
-                block = Block.deserialize(requests.get(url).content, header_only = header_only)
-                return block
+                try:
+                    return Block.deserialize(requests.get(url).content, header_only = header_only)
+                except CommonException:
+                    self.set_bad_peer(node)
         except requests.exceptions.RequestException as re:
             self.set_bad_peer(node)
 
@@ -103,8 +106,10 @@ class LightNode:
         try:
             response = requests.get(url)
             if response.status_code == 200:
-                blocks = Block.deserialize_list(requests.get(url).content, header_only = header_only)
-                return blocks
+                try:
+                    return Block.deserialize_list(requests.get(url).content, header_only = header_only)
+                except CommonException:
+                    self.set_bad_peer(node)
         except requests.exceptions.RequestException as re:
             self.set_bad_peer(node)
 

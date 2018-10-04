@@ -7,6 +7,7 @@ import io
 from pydaten.defaults import config
 from pydaten.utils.bytestream import ByteStream
 from pydaten.common.transaction import *
+from pydaten.common.errors import *
 from pydaten.core.merkletree import MerkleTree
 
 class Block(object):
@@ -38,19 +39,22 @@ class Block(object):
         return stream.value()
 
     def deserialize(serialized, header_only = False):
-        raw = ByteStream(serialized)
+        try:
+            raw = ByteStream(serialized)
 
-        index = raw.read_uint32()
-        timestamp = raw.read_uint32()
-        previous_hash = raw.read(32)
-        merkle_root = raw.read(32)
-        difficulty = raw.read_uint32()
-        nonce = raw.read_uint32()
-        transactions = None if header_only else Transaction.deserialize_list(raw.read())
+            index = raw.read_uint32()
+            timestamp = raw.read_uint32()
+            previous_hash = raw.read(32)
+            merkle_root = raw.read(32)
+            difficulty = raw.read_uint32()
+            nonce = raw.read_uint32()
+            transactions = None if header_only else Transaction.deserialize_list(raw.read())
 
-        block = Block(index, timestamp, previous_hash, difficulty, transactions, nonce)
-        block.merkle_root = merkle_root
-        return block
+            block = Block(index, timestamp, previous_hash, difficulty, transactions, nonce)
+            block.merkle_root = merkle_root
+            return block
+        except:
+            raise BlockCorrupted()
 
     def serialize_list(blocks, header_only = False):
         raw = ByteStream()

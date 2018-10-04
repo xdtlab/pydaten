@@ -24,6 +24,7 @@ from pydaten.core import difficulty
 from pydaten.defaults import genesis
 from pydaten.utils import misc
 from pydaten.core.errors import *
+from pydaten.common.errors import CommonException
 from pydaten.common.address import *
 
 RESOURCES_PATH = pkg_resources.resource_filename(__name__, 'resources')
@@ -162,12 +163,12 @@ class Node(LightNode):
         if request.method == 'GET':
             return web.json_response(data=[tx.json() for tx in self.blockchain.transactions])
         elif request.method == 'POST':
-            tx = Transaction.deserialize(await request.content.read())
             try:
+                tx = Transaction.deserialize(await request.content.read())
                 self.blockchain.is_valid_transaction(tx)
                 self.transaction_queue.put(tx)
                 return web.json_response(data = {'ok' : True})
-            except BlockchainException as e:
+            except (CommonException, BlockchainException) as e:
                 return web.json_response(data = {'ok' : False, 'error': str(e)})
 
     async def nodes(self, request):
@@ -182,12 +183,12 @@ class Node(LightNode):
         if request.method == 'GET':
             return web.Response(text='All blocks')
         elif request.method == 'POST':
-            b = Block.deserialize(await request.content.read())
             try:
+                b = Block.deserialize(await request.content.read())
                 self.blockchain.is_valid_block(b)
                 self.block_queue.put(b)
                 return web.json_response(data = {'ok' : True})
-            except BlockchainException as e:
+            except (CommonException, BlockchainException) as e:
                 return web.json_response(data = {'ok' : False, 'error': str(e)})
 
     async def block(self, request):
