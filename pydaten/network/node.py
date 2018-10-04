@@ -85,6 +85,10 @@ class Node(LightNode):
         self.app = app
         web.run_app(app, host=ip, port=port)
 
+    def add_peer(self, peer):
+        if peer != self.host:
+            super().add_peer(peer)
+
     def update_peers(self):
         if self.host in self.peers:
             self.peers.remove(self.host)
