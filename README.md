@@ -26,7 +26,7 @@ Nobody owns these data, and every byte on this blockchain, once uploaded, will r
 
 ### Universal Database
 
-Daten can be used as a database platform for different applications. Daten removes the need for remote servers and centeralized databases. Applications just need to define some schema and rules for the database of their application and use the Daten network for storing data. This way, the only thing application developers should implement is a client side application which just connects to the Daten network.
+Daten is a database platform based on blockchain technology. Daten removes the need for remote servers and centeralized databases. Applications just need to define some schema and rules for the database of their application and use the Daten network for storing data. This way, the only thing application developers should implement is a client side application which just connects to the Daten network.
 
 With Daten, you can upload files on the blockchain, securely chat with your friends, participate in decentralized social networks, store webpages, transfer value and much more.
 
@@ -34,6 +34,8 @@ As an example, users can build a Twitter-like social network on top of Daten, wi
 
 ## Data and Addresses, building blocks of the Daten Network
 All of the transactions in the Daten blockchain have unique identifiers associated with them. These identifiers are dot-separated names, representing a huge tree of data.
+
+![Daten Tree](https://user-images.githubusercontent.com/42034037/46507248-73be9000-c844-11e8-8839-2b5be2178060.png | width=480)
 
 Each transaction in the Daten blockchain has a property called **data** which is used to store up to 64KB of data with different types, including **Strings**, **Bytes**, **Booleans**,  **Decimals**, **Maps**, **Lists** (and **Functions** in the future) in itself.
 
