@@ -389,7 +389,7 @@ class Node(LightNode):
         return self.next_block
 
     async def mine_next_block(self):
-        if self.miner is not None:
+        if self.miner is not None and not self.miner.closed:
             block = self.get_next_block()
             await self.miner.send_json({
                 'id': block.index,
