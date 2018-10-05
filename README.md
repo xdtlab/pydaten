@@ -35,7 +35,9 @@ As an example, users can build a Twitter-like social network on top of Daten, wi
 ## Data and Addresses, building blocks of the Daten Network
 All of the transactions in the Daten blockchain have unique identifiers associated with them. These identifiers are dot-separated names, representing a huge tree of data.
 
-![Daten Tree](https://user-images.githubusercontent.com/42034037/46507248-73be9000-c844-11e8-8839-2b5be2178060.png){:height="50%" width="50%"}
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/42034037/46507248-73be9000-c844-11e8-8839-2b5be2178060.png" alt="Daten Tree"/>
+</p>
 
 Each transaction in the Daten blockchain has a property called **data** which is used to store up to 64KB of data with different types, including **Strings**, **Bytes**, **Booleans**,  **Decimals**, **Maps**, **Lists** (and **Functions** in the future) in itself.
 
