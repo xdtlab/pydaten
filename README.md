@@ -1,4 +1,4 @@
-<img align="left" src="pydaten/network/resources/static/logo.svg" alt="Daten Logo" width="96">
+<img align="left" style="margin:100px" src="pydaten/network/resources/static/logo.svg" alt="Daten Logo" width="42">
 
 # Daten Project
 
