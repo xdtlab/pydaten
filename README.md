@@ -12,7 +12,7 @@ I, as a Software Engineer, interested in Blockchain stuff, decided to design and
 
 Daten is a P2P decentralized database platform based on blockchain technology. It removes the need for remote servers and centralized databases. Applications just need to define some schema and rules for their database and use the Daten network for storing data. This way, the only thing application developers should implement is a client side program that just connects to the Daten network.
 
-Through Daten, you can upload files, securely chat with your friends, participate in decentralized social networks, store webpages, transfer value and much more.
+Through Daten, you can upload files, securely chat with your friends, participate in decentralized social networks, store webpages, transfer value and etc.
 
 As an example, users can build a Twitter-like social network on top of Daten, without the need of a remote server, with everything, including the HTML pages, CSS styles, JS files and images uploaded on the blockchain itself.
 
@@ -73,22 +73,25 @@ Daten is about exchanging data, not value. So there isn't any need for a message
 Protocol is implemented with HTTP and WebSockets, therefore you can easily communicate with the nodes directly on a web browser.
 
 ## dApps
-Daten is a decentralized application platform.
-### Encrypted Instant Messaging
-Talk anonymously without a third-party, and you can access your conversations everywhere.
-### File Storage Platform
-You can upload your files on the Daten Network with anysize.
-Load balancing as a feature!
-### Decentralized Web
-Uploading HTML content.
-### Search Engines
-A search-engine may be provided which is able to explore the entire Daten blockchain.
+Daten is a decentralized application platform, some of those applications are listed here.
 ### General-purpose Database
+Daten is a database, therefore it can be used in any kind of application that needs to keep its data stored somewhere.
 Developers can develop dApps without maintaining a server and let the user choose where he wants to store his data. This can make private social-networks on the Daten platform possible.
+### File Storage Platform
+You can upload your files of any size on the Daten Network.
+Load balancing as a feature!
+### Encrypted Instant Messaging
+Transactions propagate and get saved on the nodes when you put regular fees on them. This feature can be used to implement secure, instant messaging software, without a third party. Keep in mind that your encrypted chat history is saved on the network.
+### Decentralized Web
+Daten can easily store files in itself, what if we put HTML content on it? Pay once, and your web content will be hosted life-time!
+### Search Engines
+As the blockchain gets filled with various content after some time, a search-engine on those contents may become mandatory in the future.
 
 ## Implementation
 Daten is currently implemented in Python.
+
 Daten uses **Argon2i** as its PoW hash function.
+
 Total supply is: 18,446,744,073 XDT
 
 ## Usage
