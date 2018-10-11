@@ -2,7 +2,7 @@
 
 # Daten Project
 
-[![Build Status](https://travis-ci.org/daten-project/pydaten.svg?branch=master)](https://travis-ci.org/daten-project/pydaten)
+[![Build Status](https://travis-ci.org/xdtlab/pydaten.svg?branch=master)](https://travis-ci.org/daten-project/pydaten)
 
 It has been years since the first version of Bitcoin came out. Although a massive amount of time has been spent on research and development of blockchains, they are still being used primarily for financial purposes.
 
