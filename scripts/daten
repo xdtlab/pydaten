@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import io, json, os
+import io, json, os, sys
 
 from pydaten.network.node import Node
 from pydaten.common.address import Address
@@ -54,7 +54,7 @@ if __name__ == '__main__':
         import miniupnpc
     except ImportError:
         print("ِYou need to install miniupnpc python library.")
-        return
+        sys.exit()
 
     if args.nat:
         try:
@@ -62,11 +62,12 @@ if __name__ == '__main__':
             upnp.discoverdelay = 10
             devices = upnp.discover()
         except:
-            print("Some exception happend while discovering routers.")
+            print("Some exceptions happend while discovering routers.")
 
-    if devices:
-        upnp.selectigd()
-        upnp.addportmapping(DEFAULT_PORT, 'TCP', upnp.lanaddr, DEFAULT_PORT, 'testing', '')
+        if devices:
+            upnp.selectigd()
+            upnp.addportmapping(DEFAULT_PORT, 'TCP', upnp.lanaddr, DEFAULT_PORT, 'daten-test', '')
+            print("Port mapped successfully ex-ip: {}".format(get_public_ip()))
 
     node = Node(args.host or config['host'],
                 args.ip or config['ip'],
