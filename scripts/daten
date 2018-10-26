@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 
-import io, json, os
+import io, json, os, sys
 
 from pydaten.network.node import Node
 from pydaten.common.address import Address
 from pydaten.utils.misc import get_public_ip
 
 import argparse
+import miniupnpc
 
 DEFAULT_USERNAME = 'admin'
 DEFAULT_PASSWORD = 'admin'
@@ -44,8 +45,24 @@ if __name__ == '__main__':
     parser.add_argument("--port", help="Port of the node. (Default: {})".format(config['port']))
     parser.add_argument("--path", help="Path for storing blocks. (Default: {})".format(config['path']))
     parser.add_argument("--init", help="Initial peer.")
+    parser.add_argument('--nat', dest='nat', action='store_true',
+                        help='Map router port to the running node\'s port')
     args = parser.parse_args()
     args.init = {args.init} if args.init else None
+
+    if args.nat:
+        try:
+            upnp = miniupnpc.UPnP()
+            upnp.discoverdelay = 10
+            devices = upnp.discover()
+            if devices:
+                upnp.selectigd()
+                upnp.addportmapping(DEFAULT_PORT, 'TCP', upnp.lanaddr, DEFAULT_PORT, 'daten', '')
+                print("Port mapped successfully ex-ip: {}".format(get_public_ip()))
+
+        except:
+            print("Some exceptions happend while discovering routers.")
+
 
     node = Node(args.host or config['host'],
                 args.ip or config['ip'],
