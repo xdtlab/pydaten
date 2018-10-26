@@ -50,24 +50,19 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args.init = {args.init} if args.init else None
 
-    try:
-        import miniupnpc
-    except ImportError:
-        print("ِYou need to install miniupnpc python library.")
-        sys.exit()
-
     if args.nat:
         try:
             upnp = miniupnpc.UPnP()
             upnp.discoverdelay = 10
             devices = upnp.discover()
+            if devices:
+                upnp.selectigd()
+                upnp.addportmapping(DEFAULT_PORT, 'TCP', upnp.lanaddr, DEFAULT_PORT, 'daten', '')
+                print("Port mapped successfully ex-ip: {}".format(get_public_ip()))
+
         except:
             print("Some exceptions happend while discovering routers.")
 
-        if devices:
-            upnp.selectigd()
-            upnp.addportmapping(DEFAULT_PORT, 'TCP', upnp.lanaddr, DEFAULT_PORT, 'daten-test', '')
-            print("Port mapped successfully ex-ip: {}".format(get_public_ip()))
 
     node = Node(args.host or config['host'],
                 args.ip or config['ip'],
