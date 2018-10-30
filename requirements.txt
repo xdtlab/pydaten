@@ -2,6 +2,6 @@ asyncio==3.4.3
 aiohttp==3.0.1
 coincurve==7.1.0
 argon2-cffi==18.1.0
-requests==2.18.4
+requests==2.20.0
 plyvel==1.0.5
 miniupnpc==2.0.2
