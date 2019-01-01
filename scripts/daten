@@ -4,7 +4,7 @@ import io, json, os, sys
 
 from pydaten.network.node import Node
 from pydaten.common.address import Address
-from pydaten.utils.misc import get_public_ip
+from pydaten.utils.misc import get_public_ip, get_contrib_nodes
 
 import argparse
 import miniupnpc
@@ -18,7 +18,6 @@ try:
 except:
     print("Cannot discover public ip!")
     exit(1)
-DEFAULT_INITIAL_PEERS = [DEFAULT_HOST]
 
 if __name__ == '__main__':
     CONFIG_DIR = os.path.join(os.path.expanduser("~"), '.daten')
@@ -34,7 +33,7 @@ if __name__ == '__main__':
                   'ip': DEFAULT_IP,
                   'port': DEFAULT_PORT,
                   'path': os.path.join(CONFIG_DIR, 'data'),
-                  'initialPeers': DEFAULT_INITIAL_PEERS,
+                  'initialPeers': [],
                   'username': DEFAULT_USERNAME,
                   'password': DEFAULT_PASSWORD}
         with io.open(CONFIG_PATH, 'w') as f:
@@ -69,6 +68,6 @@ if __name__ == '__main__':
                 args.ip or config['ip'],
                 args.port or config['port'],
                 args.path or config['path'],
-                args.init or config['initialPeers'],
+                args.init or config['initialPeers'] or get_contrib_nodes(),
                 config['username'],
                 config['password'])

@@ -16,3 +16,9 @@ def median(lst):
 import requests
 def get_public_ip():
     return requests.get('https://api.ipify.org/?format=json').json()['ip']
+
+def get_contrib_nodes():
+    nodes = requests.get('https://raw.githubusercontent.com/xdtlab/list/master/list.txt').text
+    nodes = nodes.split('\n')
+    nodes = [n for n in nodes if len(n) > 0 and not n.startswith('#')]
+    return set(nodes)
