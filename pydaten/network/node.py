@@ -360,7 +360,7 @@ class Node(LightNode):
         latest_block = self.blockchain.get_latest_block()
         latest_blocks = {}
         for node in self.random_peers():
-            remote_block = self.get_block_from('latest', node)
+            remote_block = self.get_block_from('latest', node, True)
             if remote_block and remote_block.index > latest_block.index:
                 if remote_block.index not in latest_blocks:
                     latest_blocks[remote_block.index] = {}
