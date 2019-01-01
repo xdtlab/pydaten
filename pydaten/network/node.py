@@ -211,6 +211,7 @@ class Node(LightNode):
             end = self.blockchain.get_height()
         else:
             end = int(end) + 1
+            end = min(self.blockchain.get_height(), end)
         if end > start:
             result = self.blockchain.get_block_range(start, end)
         else:
