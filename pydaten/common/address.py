@@ -2,8 +2,8 @@
 
 import string
 from abc import ABC, abstractmethod
-
 from pydaten.utils.bytestream import ByteStream
+from pydaten.utils import misc
 
 class Address(ABC):
 
@@ -25,16 +25,18 @@ class Address(ABC):
 
     @classmethod
     def from_string(cls, address):
-        if len(address) == 66 and all(c in string.hexdigits for c in address):
-            return RawAddress(bytes.fromhex(address))
+        if address[0] == '@':
+            return NameAddress(tuple(address[1:].split('.')))
         else:
-            return NameAddress(tuple(address.split('.')))
+            return RawAddress(misc.from_base58(address).to_bytes(33, byteorder='big'))
 
 class RawAddress(Address):
 
     TYPE_ID = 0
 
     def __init__(self, public_key):
+        if type(public_key) is not bytes or len(public_key) != 33:
+            raise Exception("Invalid public key!")
         self.public_key = public_key
 
     def write(self, stream):
@@ -49,7 +51,7 @@ class RawAddress(Address):
         return NameAddress((name,))
 
     def __str__(self):
-        return self.public_key.hex()
+        return misc.to_base58(int.from_bytes(self.public_key, byteorder='big'))
 
     def __eq__(self, other):
         return type(other) is RawAddress and self.public_key == other.public_key
@@ -96,7 +98,7 @@ class NameAddress(Address):
         return (self.name[0], NameAddress(self.name[1:]))
 
     def __str__(self):
-        return '.'.join(self.name)
+        return '@' + '.'.join(self.name)
 
     def __eq__(self, other):
         return type(other) is NameAddress and self.name == other.name

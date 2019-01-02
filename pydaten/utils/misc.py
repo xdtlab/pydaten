@@ -3,6 +3,23 @@ def random_name(length = 16):
     chars = string.ascii_lowercase + string.digits
     return ''.join([random.choice(chars) for _ in range(length)])
 
+b58alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+def to_base58(num):
+    encoded = ''
+    while num > 0:
+        div, rem = (num // 58, num % 58)
+        num = div
+        encoded = b58alphabet[rem] + encoded
+    return encoded or '1'
+def from_base58(base58):
+    decoded = 0
+    while base58:
+      pos = b58alphabet.index(base58[0])
+      powerOf = len(base58) - 1
+      decoded += pos * (58 ** powerOf)
+      base58 = base58[1:]
+    return decoded
+
 def median(lst):
     n = len(lst)
     lst = sorted(lst)
