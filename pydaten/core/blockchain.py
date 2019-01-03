@@ -286,16 +286,11 @@ class Blockchain(object):
                     history.append(tx)
         return history
 
-    def query(self, name = None, destination = None):
-        # This is a very huge query.
-        if name is None and destination is None:
-            return []
-        elif name is None and destination is not None:
-            return self.world.children(destination)
-        elif name is not None and destination is not None:
-            return [self.world.get_transaction(destination.push(name))]
-        elif name is not None and destination is None:
-            return [self.world.get_transaction(NameAddress((name,)))]
+    def find(self, name):
+        return self.world.get_transaction(name)
+
+    def find_children(self, name):
+        return self.world.children(name)
 
     def new_block(self, miner, timestamp):
 

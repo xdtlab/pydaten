@@ -77,7 +77,7 @@ class Node(LightNode):
         app.router.add_route('*', '/peers', self.nodes)
         app.router.add_route('*', '/transactions', self.transactions)
         app.router.add_get('/status', self.status)
-        app.router.add_get('/query', self.query)
+        app.router.add_get('/find', self.find)
         app.router.add_get('/latest', self.latest)
         app.router.add_get('/resolve', self.resolve)
         app.router.add_get('/confirm', self.confirm)
@@ -218,12 +218,15 @@ class Node(LightNode):
             result = []
         return web.Response(body=Block.serialize_list(result, header_only = header_only))
 
-    async def query(self, request):
-        name = request.query.get('name', None)
-        destination = request.query.get('destination', None)
-        destination = Address.from_string(destination) if destination else None
-        txs = self.blockchain.query(name = name, destination = destination)
-        return web.Response(body=Transaction.serialize_list(txs))
+    async def find(self, request):
+        children = 'children' in request.query
+        name = Address.from_string(request.query.get('name', None))
+        if not children:
+            tx = self.blockchain.find(name)
+            return web.Response(body=tx.serialize())
+        else:
+            txs = self.blockchain.find_children(name)
+            return web.Response(body=Transaction.serialize_list(txs))
 
     async def latest(self, request):
         address = Address.from_string(request.query.get('address'))
