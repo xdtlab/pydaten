@@ -47,7 +47,7 @@ class World:
             else:
                 raise Exception("Invalid name!")
 
-    def children(self, name_address):
+    def find_children(self, name_address):
         prefix = World.TRANSACTION_PREFIX + _tx_key(name_address) + b'|'
         result = []
         for k, v in self.root.iterator(prefix = prefix):
@@ -76,7 +76,7 @@ class World:
         wb.put(World.RESOLVE_PREFIX + addr_key, bs.value())
         dst = self.resolve(transaction.destination)
         return k
-    def get_transaction(self, name_address):
+    def find(self, name_address):
         k = self.root.get(World.SHORTCUT_PREFIX + _tx_key(name_address))
         return Transaction.deserialize(self.root.get(k))
     def _clear_transaction(self, wb, name_address):

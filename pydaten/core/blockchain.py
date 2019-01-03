@@ -287,10 +287,10 @@ class Blockchain(object):
         return history
 
     def find(self, name):
-        return self.world.get_transaction(name)
+        return self.world.find(name)
 
     def find_children(self, name):
-        return self.world.children(name)
+        return self.world.find_children(name)
 
     def new_block(self, miner, timestamp):
 
